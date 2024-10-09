@@ -1,8 +1,8 @@
-name: "Voyanti BMS Pace"
+name: "Voyanti BMS Pace Bank 3"
 description: "Voyanti Pace BMS Interface"
-version: "1.3.1"
-slug: "bms_pace_dev"
-url: "https://github.com/heinrich321/voyanti-pace"
+version: "1.3"
+slug: "bms_pace_bank3"
+url: "https://github.com/heinrich321/voyanti-pace/bank3"
 init: false
 arch:
   - aarch64
