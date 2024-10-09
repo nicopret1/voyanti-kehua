@@ -12,6 +12,18 @@ import json
 import atexit
 import sys
 import constants
+import random
+import time
+
+def generate_uuid():
+    # Generate random parts of the UUID
+    random_part = random.getrandbits(64)
+    timestamp = int(time.time() * 1000)  # Get current timestamp in milliseconds
+    node = random.getrandbits(48)  # Simulating a network node (MAC address)
+    
+    # Combine them into UUID format
+    uuid_str = f'{timestamp:08x}-{random_part >> 32:04x}-{random_part & 0xFFFF:04x}-{node >> 24:04x}-{node & 0xFFFFFF:06x}'
+    return uuid_str
 
 print("Starting up...")
 
@@ -63,7 +75,7 @@ def on_disconnect(client, userdata, rc):
     mqtt_connected = False
 
 
-client = mqtt.Client("bmspace")
+client = mqtt.Client("bmspace-{}".format(generate_uuid()))
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 #client.on_message = on_message
