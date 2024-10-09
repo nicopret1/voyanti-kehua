@@ -1,6 +1,6 @@
 name: "Voyanti BMS Pace"
 description: "Voyanti Pace BMS Interface"
-version: "1.0"
+version: "1.1"
 slug: "bms_pace_dev"
 url: "https://github.com/heinrich321/voyanti-pace"
 init: false
@@ -36,7 +36,6 @@ schema:
   mqtt_ha_discovery: bool
   mqtt_ha_discovery_topic: str
   mqtt_base_topic: str
-  connection_type: list(IP|Serial)
   bms_serial: str
   scan_interval: int
   debug_output: int
