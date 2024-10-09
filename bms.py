@@ -80,7 +80,7 @@ def exit_handler():
 
 atexit.register(exit_handler)
 
-def bms_connect(address, port):
+def bms_connect():
 
     try:
         print("trying to connect %s" % bms_serial)
