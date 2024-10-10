@@ -139,7 +139,7 @@ def ha_discovery():
         device['manufacturer'] = "BMS Pace"
         device['model'] = "AM-x"
         device['identifiers'] = "bmspace_" + bms_sn
-        device['name'] = "Bank 3 Generic Lithium"
+        device['name'] = "Generic Lithium Bank 3"
         device['sw_version'] = bms_version
         disc_payload['device'] = device
 
