@@ -111,6 +111,7 @@ def ha_discovery():
         device['model'] = kehua_model
         device['identifiers'] = "kehua_" + kehua_model
         device['name'] = kehua_model
+        disc_payload['name'] = kehua_model
         disc_payload['device'] = device
         client.publish(config['mqtt_ha_discovery_topic']+"/binary_sensor/KH" + "1" + "/" + disc_payload['name'].replace(' ', '_') + "/config",json.dumps(disc_payload),qos=0, retain=True)
 
