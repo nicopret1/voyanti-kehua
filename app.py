@@ -125,7 +125,7 @@ client.publish(config['mqtt_base_topic'] + "/availability","offline")
 print_initial = True
 
 try:
-    model = kehua_client.read_model()
+    kehua_model = kehua_client.read_model()
 except:
     print("Error retrieving model")
     quit()
