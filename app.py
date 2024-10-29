@@ -6,7 +6,6 @@ import json
 import json
 import atexit
 import sys
-import constants
 import random
 import time
 from kehua import KehuaClient
