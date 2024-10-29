@@ -131,7 +131,7 @@ def ha_discovery(data):
 
             # Publish the initial value of the parameter
             state_topic = disc_payload["state_topic"]
-            client.publish(state_topic, json.dumps({"value": details["value"]}), qos=0, retain=True)
+            client.publish(state_topic, json.dumps(details["value"]), qos=0, retain=True)
 
     else:
         print("HA Discovery Disabled")
@@ -141,13 +141,8 @@ def publish_state_data(data):
         # Construct the state topic
         state_topic = f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}"
         
-        # Construct the payload with the actual value
-        payload = {
-            "value": details["value"]
-        }
-        
         # Publish the actual data to the state topic
-        client.publish(state_topic, json.dumps(payload), qos=0, retain=True)
+        client.publish(state_topic, json.dumps(details["value"]), qos=0, retain=True)
 
 print("Connecting to Kehua...")
 kehua_client, kehua_client_connected = kehua_connect()
