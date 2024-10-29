@@ -145,7 +145,7 @@ while code_running == True:
             client.publish(config['mqtt_base_topic'] + "/availability","online")
 
             print_initial = False
-            
+            time.sleep(scan_interval)
 
             repub_discovery += 1
             if repub_discovery*scan_interval > 3600:
