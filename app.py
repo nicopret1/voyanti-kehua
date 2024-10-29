@@ -103,6 +103,8 @@ def ha_discovery(data):
         
         print("Publishing HA Discovery topic...")
 
+        disc_payload = {}
+
         disc_payload['availability_topic'] = config['mqtt_base_topic'] + "/availability"
 
         device = {}
@@ -120,8 +122,7 @@ def ha_discovery(data):
                 "name": parameter,
                 "unique_id": "kehua_" + parameter.replace(" ", "_").lower(),
                 "state_topic": f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}",
-                "unit_of_measurement": details["unit"],
-                "value_template": "{{ value_json.value }}"
+                "unit_of_measurement": details["unit"]
             }
 
             # Publish the discovery payload to the MQTT discovery topic
