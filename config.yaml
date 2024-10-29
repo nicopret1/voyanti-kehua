@@ -1,6 +1,6 @@
 name: "Voyanti Kehua Addon"
 description: "Voyanti Kehua Addon"
-version: "0.0.1"
+version: "0.0.2"
 slug: "kehua_dev"
 url: "https://github.com/heinrich321/voyanti-kehua"
 init: false
@@ -21,7 +21,7 @@ options:
   mqtt_password: "mqtt-users"
   mqtt_ha_discovery: true
   mqtt_ha_discovery_topic: "homeassistant"
-  mqtt_base_topic: "bmspace"
+  mqtt_base_topic: "kehua"
   modbus_ip: "192.168.1.91"
   modbus_port: 502
   scan_interval: 10
