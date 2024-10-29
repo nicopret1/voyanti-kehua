@@ -122,7 +122,8 @@ def ha_discovery(data):
                 "name": parameter,
                 "unique_id": "kehua_" + parameter.replace(" ", "_").lower(),
                 "state_topic": f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}",
-                "unit_of_measurement": details["unit"]
+                "unit_of_measurement": details["unit"],
+                "device": device
             }
 
             # Publish the discovery payload to the MQTT discovery topic
