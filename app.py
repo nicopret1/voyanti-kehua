@@ -171,7 +171,7 @@ while code_running == True:
             data = kehua_client.read_registers()
 
             if print_initial:
-                ha_discovery()
+                ha_discovery(data)
 
             publish_state_data(data)
                 

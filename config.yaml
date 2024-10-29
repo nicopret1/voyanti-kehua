@@ -1,6 +1,6 @@
 name: "Voyanti Kehua Addon"
 description: "Voyanti Kehua Addon"
-version: "0.0.12"
+version: "0.0.13"
 slug: "kehua_dev"
 url: "https://github.com/heinrich321/voyanti-kehua"
 init: false
