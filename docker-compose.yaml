@@ -1,6 +1,6 @@
 version: '3'
 services:
-  bmspace:
+  kehua:
     build: 
       context: .
     restart: unless-stopped

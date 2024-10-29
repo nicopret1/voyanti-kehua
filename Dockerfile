@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Copy code
-COPY bms.py constants.py run.sh ./
+COPY app.py constants.py run.sh ./
 RUN chmod a+x run.sh
 
 CMD [ "sh", "./run.sh" ]

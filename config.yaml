@@ -1,8 +1,8 @@
-name: "Voyanti BMS Pace"
-description: "Voyanti Pace BMS Interface"
-version: "1.3.2"
-slug: "bms_pace_dev"
-url: "https://github.com/heinrich321/voyanti-pace"
+name: "Voyanti Kehua Addon"
+description: "Voyanti Kehua Addon"
+version: "0.0.1"
+slug: "kehua_dev"
+url: "https://github.com/heinrich321/voyanti-kehua"
 init: false
 arch:
   - aarch64
@@ -22,12 +22,10 @@ options:
   mqtt_ha_discovery: true
   mqtt_ha_discovery_topic: "homeassistant"
   mqtt_base_topic: "bmspace"
-  bms_serial: "/dev/ttyUSB0"
-  scan_interval: 5
+  modbus_ip: "192.168.1.91"
+  modbus_port: 502
+  scan_interval: 10
   debug_output: 0
-  force_pack_offset: 0
-  zero_pad_number_cells: 0
-  zero_pad_number_packs: 0
 schema:
   mqtt_host: str
   mqtt_port: int
@@ -36,9 +34,7 @@ schema:
   mqtt_ha_discovery: bool
   mqtt_ha_discovery_topic: str
   mqtt_base_topic: str
-  bms_serial: str
+  modbus_ip: str
+  modbus_port: int
   scan_interval: int
   debug_output: int
-  force_pack_offset: "int?"
-  zero_pad_number_cells: "int?"
-  zero_pad_number_packs: "int?"
