@@ -45,7 +45,7 @@ modbus_ip = config['modbus_ip']
 modbus_port = config['modbus_port']
 ha_discovery_enabled = config['mqtt_ha_discovery']
 code_running = True
-client_connected = False
+kehua_client_connected = False
 mqtt_connected = False
 print_initial = True
 debug_output = config['debug_output']
@@ -119,7 +119,7 @@ def ha_discovery():
 
 
 print("Connecting to Kehua...")
-kehua_client, kehua_client_connected = kehua_connect()
+kehua_client, kehua_kehua_client_connected = kehua_connect()
 
 client.publish(config['mqtt_base_topic'] + "/availability","offline")
 print_initial = True
@@ -134,7 +134,7 @@ except:
 
 while code_running == True:
 
-    if client_connected == True:
+    if kehua_client_connected == True:
         if mqtt_connected == True:
             # READ DATA
 
@@ -160,7 +160,7 @@ while code_running == True:
             print_initial = True
     else: #BMS not connected
         print("Client disconnected, trying to reconnect...")
-        kehua_client, kehua_client_connected = kehua_connect()
+        kehua_client, kehua_kehua_client_connected = kehua_connect()
         client.publish(config['mqtt_base_topic'] + "/availability","offline")
         time.sleep(5)
         print_initial = True
