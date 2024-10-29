@@ -95,10 +95,9 @@ def kehua_connect():
         return False
 
 
-def ha_discovery():
+def ha_discovery(data):
 
     global ha_discovery_enabled
-    global packs
 
     if ha_discovery_enabled:
         
@@ -113,11 +112,41 @@ def ha_discovery():
         device['name'] = kehua_model
         disc_payload['name'] = kehua_model
         disc_payload['device'] = device
-        client.publish(config['mqtt_ha_discovery_topic']+"/binary_sensor/KH" + "1" + "/" + disc_payload['name'].replace(' ', '_') + "/config",json.dumps(disc_payload),qos=0, retain=True)
+        client.publish(config['mqtt_ha_discovery_topic']+"/binary_sensor/kehua/" + disc_payload['name'].replace(' ', '_') + "/config",json.dumps(disc_payload),qos=0, retain=True)
+
+        for parameter, details in data.items():
+            # Construct discovery payload
+            disc_payload = {
+                "name": parameter,
+                "unique_id": "kehua_" + parameter.replace(" ", "_").lower(),
+                "state_topic": f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}",
+                "unit_of_measurement": details["unit"],
+                "value_template": "{{ value_json.value }}"
+            }
+
+            # Publish the discovery payload to the MQTT discovery topic
+            discovery_topic = f"{config['mqtt_ha_discovery_topic']}/sensor/kehua/{parameter.replace(' ', '_').lower()}/config"
+            client.publish(discovery_topic, json.dumps(disc_payload), qos=0, retain=True)
+
+            # Publish the initial value of the parameter
+            state_topic = disc_payload["state_topic"]
+            client.publish(state_topic, json.dumps({"value": details["value"]}), qos=0, retain=True)
 
     else:
         print("HA Discovery Disabled")
 
+def publish_state_data(data):
+    for parameter, details in data.items():
+        # Construct the state topic
+        state_topic = f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}"
+        
+        # Construct the payload with the actual value
+        payload = {
+            "value": details["value"]
+        }
+        
+        # Publish the actual data to the state topic
+        client.publish(state_topic, json.dumps(payload), qos=0, retain=True)
 
 print("Connecting to Kehua...")
 kehua_client, kehua_client_connected = kehua_connect()
@@ -139,8 +168,12 @@ while code_running == True:
         if mqtt_connected == True:
             # READ DATA
 
+            data = kehua_client.read_registers()
+
             if print_initial:
                 ha_discovery()
+
+            publish_state_data(data)
                 
             client.publish(config['mqtt_base_topic'] + "/availability","online")
 

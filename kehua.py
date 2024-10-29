@@ -2,113 +2,6 @@ from pymodbus.client import ModbusTcpClient
 import struct
 
 class KehuaClient:
-    def __init__(self, ip_address, port=502):
-        self.client = ModbusTcpClient(ip_address, port=port)
-
-    def connect(self):
-        return self.client.connect()
-
-    def close(self):
-        self.client.close()
-
-    def read_ascii(self, start_address, count):
-        """Read ASCII data from consecutive registers and convert to string."""
-        result = self.client.read_input_registers(start_address, count)
-        if result.isError():
-            print(f"Error reading ASCII registers from {start_address} to {start_address + count - 1}")
-            return None
-        # Convert register values to ASCII characters
-        ascii_string = ''.join([chr((reg >> 8) & 0xFF) + chr(reg & 0xFF) for reg in result.registers])
-        return ascii_string.strip('\x00')
-
-    def read_uint16(self, start_address, count=1):
-        """Read UINT16 data."""
-        result = self.client.read_input_registers(start_address, count)
-        if result.isError():
-            print(f"Error reading UINT16 registers from {start_address} to {start_address + count - 1}")
-            return None
-        return result.registers
-
-    def read_int16(self, start_address, count=1):
-        """Read INT16 data and interpret it as signed."""
-        result = self.client.read_input_registers(start_address, count)
-        if result.isError():
-            print(f"Error reading INT16 registers from {start_address} to {start_address + count - 1}")
-            return None
-        return [struct.unpack('>h', struct.pack('>H', reg))[0] for reg in result.registers]
-
-    def read_uint32(self, start_address):
-        """Read UINT32 data by combining two consecutive 16-bit registers."""
-        result = self.client.read_input_registers(start_address, 2)
-        if result.isError():
-            print(f"Error reading UINT32 registers from {start_address} to {start_address + 1}")
-            return None
-        # Combine two 16-bit registers into a 32-bit unsigned integer
-        high, low = result.registers
-        return (high << 16) + low
-
-    def read_int32(self, start_address):
-        """Read INT32 data by combining two consecutive 16-bit registers and interpreting as signed."""
-        result = self.client.read_input_registers(start_address, 2)
-        if result.isError():
-            print(f"Error reading INT32 registers from {start_address} to {start_address + 1}")
-            return None
-        # Combine two 16-bit registers into a 32-bit signed integer
-        high, low = result.registers
-        combined = (high << 16) + low
-        return struct.unpack('>i', struct.pack('>I', combined))[0]
-
-    def read_registers(self, register_map):
-        return_data = {}
-        """Read registers based on a register map."""
-        for name, properties in register_map.items():
-            start_address = properties['start_address']
-            length = properties.get('length', 1)
-            data_type = properties.get('type', 'UINT16')
-            scale = properties.get('scale', 1)
-            unit = properties.get('unit', '')
-
-            # Read data based on type
-            if data_type == 'ASCII':
-                value = self.read_ascii(start_address, length)
-            elif data_type == 'UINT16':
-                raw_values = self.read_uint16(start_address, length)
-                value = [v * scale for v in raw_values] if raw_values is not None else None
-            elif data_type == 'INT16':
-                raw_values = self.read_int16(start_address, length)
-                value = [v * scale for v in raw_values] if raw_values is not None else None
-            elif data_type == 'UINT32':
-                raw_value = self.read_uint32(start_address)
-                value = raw_value * scale if raw_value is not None else None
-            elif data_type == 'INT32':
-                raw_value = self.read_int32(start_address)
-                value = raw_value * scale if raw_value is not None else None
-            else:
-                print(f"Unsupported data type: {data_type}")
-                value = None
-
-            # Output the result
-            if value is not None:
-                if isinstance(value, list) and len(value) == 1:
-                    value = value[0]  # Unpack single-value lists
-                print(f"{name}: {value} {unit}")
-                return_data[name] = { 
-                    'value': value,
-                    'unit': unit
-                 }
-        return return_data
-    
-    def read_version(self):
-        return self.read_ascii(4810, 5)
-    def read_model(self):
-        return self.read_ascii(4800, 10)
-
-# Example usage
-if __name__ == "__main__":
-    # Define the Modbus server details
-    ip_address = "192.168.1.91"
-    
-    # Define the register map
     register_map = {
         # Device and Version Information
         "Device Model": {"start_address": 4800, "length": 10, "type": "ASCII"},
@@ -195,12 +88,120 @@ if __name__ == "__main__":
         "Discharge Limit Current": {"start_address": 5207, "type": "UINT16", "scale": 0.1, "unit": "A"},
         "Charge Limit Voltage": {"start_address": 5208, "type": "UINT16", "scale": 0.1, "unit": "V"},
     }
+
+    def __init__(self, ip_address, port=502):
+        self.client = ModbusTcpClient(ip_address, port=port)
+
+    def connect(self):
+        return self.client.connect()
+
+    def close(self):
+        self.client.close()
+
+    def read_ascii(self, start_address, count):
+        """Read ASCII data from consecutive registers and convert to string."""
+        result = self.client.read_input_registers(start_address, count)
+        if result.isError():
+            print(f"Error reading ASCII registers from {start_address} to {start_address + count - 1}")
+            return None
+        # Convert register values to ASCII characters
+        ascii_string = ''.join([chr((reg >> 8) & 0xFF) + chr(reg & 0xFF) for reg in result.registers])
+        return ascii_string.strip('\x00')
+
+    def read_uint16(self, start_address, count=1):
+        """Read UINT16 data."""
+        result = self.client.read_input_registers(start_address, count)
+        if result.isError():
+            print(f"Error reading UINT16 registers from {start_address} to {start_address + count - 1}")
+            return None
+        return result.registers
+
+    def read_int16(self, start_address, count=1):
+        """Read INT16 data and interpret it as signed."""
+        result = self.client.read_input_registers(start_address, count)
+        if result.isError():
+            print(f"Error reading INT16 registers from {start_address} to {start_address + count - 1}")
+            return None
+        return [struct.unpack('>h', struct.pack('>H', reg))[0] for reg in result.registers]
+
+    def read_uint32(self, start_address):
+        """Read UINT32 data by combining two consecutive 16-bit registers."""
+        result = self.client.read_input_registers(start_address, 2)
+        if result.isError():
+            print(f"Error reading UINT32 registers from {start_address} to {start_address + 1}")
+            return None
+        # Combine two 16-bit registers into a 32-bit unsigned integer
+        high, low = result.registers
+        return (high << 16) + low
+
+    def read_int32(self, start_address):
+        """Read INT32 data by combining two consecutive 16-bit registers and interpreting as signed."""
+        result = self.client.read_input_registers(start_address, 2)
+        if result.isError():
+            print(f"Error reading INT32 registers from {start_address} to {start_address + 1}")
+            return None
+        # Combine two 16-bit registers into a 32-bit signed integer
+        high, low = result.registers
+        combined = (high << 16) + low
+        return struct.unpack('>i', struct.pack('>I', combined))[0]
+
+    def read_registers(self):
+        return_data = {}
+        """Read registers based on a register map."""
+        for name, properties in self.register_map.items():
+            start_address = properties['start_address']
+            length = properties.get('length', 1)
+            data_type = properties.get('type', 'UINT16')
+            scale = properties.get('scale', 1)
+            unit = properties.get('unit', '')
+
+            # Read data based on type
+            if data_type == 'ASCII':
+                value = self.read_ascii(start_address, length)
+            elif data_type == 'UINT16':
+                raw_values = self.read_uint16(start_address, length)
+                value = [v * scale for v in raw_values] if raw_values is not None else None
+            elif data_type == 'INT16':
+                raw_values = self.read_int16(start_address, length)
+                value = [v * scale for v in raw_values] if raw_values is not None else None
+            elif data_type == 'UINT32':
+                raw_value = self.read_uint32(start_address)
+                value = raw_value * scale if raw_value is not None else None
+            elif data_type == 'INT32':
+                raw_value = self.read_int32(start_address)
+                value = raw_value * scale if raw_value is not None else None
+            else:
+                print(f"Unsupported data type: {data_type}")
+                value = None
+
+            # Output the result
+            if value is not None:
+                if isinstance(value, list) and len(value) == 1:
+                    value = value[0]  # Unpack single-value lists
+                print(f"{name}: {value} {unit}")
+                return_data[name] = { 
+                    'value': value,
+                    'unit': unit
+                 }
+        return return_data
+    
+    def read_version(self):
+        return self.read_ascii(4810, 5)
+    def read_model(self):
+        return self.read_ascii(4800, 10)
+
+# Example usage
+if __name__ == "__main__":
+    # Define the Modbus server details
+    ip_address = "192.168.1.91"
+    
+    # Define the register map
     
     # Instantiate and use the ModbusReader
     reader = KehuaClient(ip_address)
     
     if reader.connect():
-        reader.read_registers(register_map)
+        reader.read_registers()
         reader.close()
     else:
         print("Failed to connect to the Modbus server.")
