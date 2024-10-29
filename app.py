@@ -66,7 +66,7 @@ def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
     mqtt_connected = False
 
 
-client = mqtt.Client("kehua-{}".format(generate_uuid()))
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "kehua-{}".format(generate_uuid()))
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 #client.on_message = on_message
