@@ -54,14 +54,14 @@ repub_discovery = 0
 
 kehua_model = None
 
-def on_connect(client, userdata, flags, rc):
-    print("MQTT connected with result code "+str(rc))
+def on_connect(client, userdata, flags, reason_code, properties):
+    print(f"Connected with result code {reason_code}")
     client.will_set(config['mqtt_base_topic'] + "/availability","offline", qos=0, retain=False)
     global mqtt_connected
     mqtt_connected = True
 
-def on_disconnect(client, userdata, rc):
-    print("MQTT disconnected with result code "+str(rc))
+def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
+    print("MQTT disconnected with result code "+str(reason_code))
     global mqtt_connected
     mqtt_connected = False
 
