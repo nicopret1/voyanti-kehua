@@ -119,7 +119,7 @@ def ha_discovery():
 
 
 print("Connecting to Kehua...")
-kehua_client, kehua_kehua_client_connected = kehua_connect()
+kehua_client, kehua_client_connected = kehua_connect()
 
 client.publish(config['mqtt_base_topic'] + "/availability","offline")
 print_initial = True
@@ -160,7 +160,7 @@ while code_running == True:
             print_initial = True
     else: #BMS not connected
         print("Client disconnected, trying to reconnect...")
-        kehua_client, kehua_kehua_client_connected = kehua_connect()
+        kehua_client, kehua_client_connected = kehua_connect()
         client.publish(config['mqtt_base_topic'] + "/availability","offline")
         time.sleep(5)
         print_initial = True
