@@ -96,54 +96,59 @@ def kehua_connect():
 
 
 def ha_discovery(data):
-
     global ha_discovery_enabled
 
     if ha_discovery_enabled:
+        print("Publishing HA Discovery topics...")
+
+        # Define the device information
+        device = {
+            "manufacturer": "Kehua",
+            "model": kehua_model,
+            "identifiers": ["kehua_" + kehua_model],
+            "name": kehua_model
+        }
+
+        # Set the device availability topic
+        availability_topic = f"{config['mqtt_base_topic']}/availability"
         
-        print("Publishing HA Discovery topic...")
-
-        disc_payload = {}
-
-        disc_payload['availability_topic'] = config['mqtt_base_topic'] + "/availability"
-
-        device = {}
-        device['manufacturer'] = "Kehua"
-        device['model'] = kehua_model
-        device['identifiers'] = "kehua_" + kehua_model
-        device['name'] = kehua_model
-        disc_payload['name'] = kehua_model
-        disc_payload['device'] = device
-        client.publish(config['mqtt_ha_discovery_topic']+"/binary_sensor/kehua/" + disc_payload['name'].replace(' ', '_') + "/config",json.dumps(disc_payload),qos=0, retain=True)
-
+        # Publish discovery topics for each parameter as a sensor entity
         for parameter, details in data.items():
-            # Construct discovery payload
+            # Construct discovery payload for each sensor
             disc_payload = {
                 "name": parameter,
                 "unique_id": "kehua_" + parameter.replace(" ", "_").lower(),
                 "state_topic": f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}",
                 "unit_of_measurement": details["unit"],
+                "availability_topic": availability_topic,
                 "device": device
             }
 
-            # Publish the discovery payload to the MQTT discovery topic
+            # Determine the discovery topic for each sensor entity
             discovery_topic = f"{config['mqtt_ha_discovery_topic']}/sensor/kehua/{parameter.replace(' ', '_').lower()}/config"
+
+            # Publish the discovery payload to MQTT
             client.publish(discovery_topic, json.dumps(disc_payload), qos=0, retain=True)
 
-            # Publish the initial value of the parameter
+            # Publish the initial value of the parameter to the state topic
             state_topic = disc_payload["state_topic"]
-            client.publish(state_topic, json.dumps(details["value"]), qos=0, retain=True)
+            client.publish(state_topic, json.dumps({"value": details["value"]}), qos=0, retain=True)
 
+        # Set the device availability to online
+        client.publish(availability_topic, "online", qos=0, retain=True)
     else:
         print("HA Discovery Disabled")
 
 def publish_state_data(data):
+    # Ensure availability is set to online when publishing data
+    client.publish(f"{config['mqtt_base_topic']}/availability", "online", qos=0, retain=True)
+
     for parameter, details in data.items():
-        # Construct the state topic
+        # Construct the state topic for each sensor
         state_topic = f"{config['mqtt_base_topic']}/{parameter.replace(' ', '_').lower()}"
         
         # Publish the actual data to the state topic
-        client.publish(state_topic, json.dumps(details["value"]), qos=0, retain=True)
+        client.publish(state_topic, json.dumps({"value": details["value"]}), qos=0, retain=True)
 
 print("Connecting to Kehua...")
 kehua_client, kehua_client_connected = kehua_connect()
